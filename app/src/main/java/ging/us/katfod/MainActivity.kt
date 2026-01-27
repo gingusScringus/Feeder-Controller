@@ -6,9 +6,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,24 +19,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShortNavigationBar
+import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
@@ -67,8 +74,8 @@ fun MainNavigation() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            NavigationBar {
-                NavigationBarItem(
+            ShortNavigationBar {
+                ShortNavigationBarItem(
                     selected = currentRoute == "feeder",
                     onClick = { navController.navigate("feeder") },
                     label = { Text("Feeder") },
@@ -76,7 +83,7 @@ fun MainNavigation() {
                         Icon(Icons.Default.Pets, contentDescription = null)
                     }
                 )
-                NavigationBarItem(
+                ShortNavigationBarItem(
                     selected = currentRoute == "settings",
                     onClick = { navController.navigate("settings") },
                     label = { Text("Settings") },
@@ -90,7 +97,9 @@ fun MainNavigation() {
         NavHost(
             navController = navController,
             startDestination = "feeder",
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() }
         ) {
             composable("feeder") { CatFeederScreen() }
             composable("settings") { SettingsScreen() }
@@ -107,52 +116,97 @@ fun CatFeederScreen() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(64.dp))
+        Text(
+            "Feeder",
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.headlineLargeEmphasized,
+            textAlign = TextAlign.Start
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f),
-            color = Color.DarkGray,
-            shape = MaterialTheme.shapes.medium
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = MaterialTheme.shapes.extraLarge
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
-                    text = "[ Camera View Placeholder ]",
-                    color = Color.White,
+                    text = "[ Live Stream ]",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(26.dp))
-        Button(
+        Spacer(modifier = Modifier.weight(1f))
+        
+        ElevatedButton(
             onClick = {
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                 println("dispensing kibble...")
             },
             modifier = Modifier
-                .width(250.dp)
-                .height(250.dp)
+                .width(280.dp)
+                .height(280.dp),
+            shape = MaterialTheme.shapes.extraLarge
+
         ) {
-            Text("Dispense!", style = MaterialTheme.typography.titleLarge)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    Icons.Default.Pets, 
+                    contentDescription = null, 
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text("Dispense", style = MaterialTheme.typography.headlineMediumEmphasized)
+            }
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
 fun SettingsScreen() {
+    var ipAddress by remember { mutableStateOf("") }
+    var vibrationEnabled by remember { mutableStateOf(true) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(64.dp))
+        Text("Settings", modifier = Modifier.fillMaxWidth(), style = MaterialTheme.typography.headlineLargeEmphasized, textAlign = TextAlign.Start)
+        Spacer(modifier = Modifier.height(32.dp))
+
+        OutlinedTextField(
+            value = ipAddress,
+            onValueChange = { ipAddress = it },
+            label = { Text("Local IP Address") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Configure your Katfod here.")
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Vibration", style = MaterialTheme.typography.bodyLarge)
+            Switch(
+                checked = vibrationEnabled,
+                onCheckedChange = { vibrationEnabled = it }
+            )
+        }
     }
 }
 
