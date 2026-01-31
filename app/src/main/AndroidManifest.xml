@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-sdk tools:overrideLibrary="androidx.compose.material3" />
 
@@ -14,7 +15,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FeederController">
+        android:theme="@style/Theme.FeederController"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="23">
         <activity
             android:name=".MainActivity"
             android:exported="true"
