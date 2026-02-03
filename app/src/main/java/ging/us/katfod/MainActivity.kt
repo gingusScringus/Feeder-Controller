@@ -463,7 +463,7 @@ fun SettingsScreen(
                             loadingJob.cancel()
 
                             when (code) {
-                                200 -> snackbarHostState.showSnackbar("Door opened!")
+                                200 -> snackbarHostState.showSnackbar("Door closed!")
                                 null -> snackbarHostState.showSnackbar("Feeder hardware unreachable. Check if hardware is active.")
                                 else -> snackbarHostState.showSnackbar("Error: $code")
                             }
@@ -539,7 +539,7 @@ suspend fun performHttpRequest(url: String): Int? {
     }
 }
 
-// @Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun CatfedPreview() {
     FeederControllerTheme {
@@ -547,7 +547,7 @@ fun CatfedPreview() {
     }
 }
 
-// @Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun FeederPreview() {
     FeederControllerTheme {
